@@ -2,46 +2,35 @@ import threading
 import turtle
 import mttkinter
 
+class Planet(turtle.Turtle):
+    def __init__(self, y, speed, orbit):
+        super().__init__()
+        self.shape('circle')
+        self.pu()
+        self.sety(y)
+        self.pd()
+        self.speed(speed)
+        self.orbit = orbit
+    def revolve(self):
+        self.circle(self.orbit)
+
 def planets():
     """simulates motion of Mercury, Venus, Earth, and Mars"""
 
-    mercury = turtle.Turtle()
-    venus = turtle.Turtle()
-    earth = turtle.Turtle()
-    mars = turtle.Turtle()
-    mercury.shape('circle')
-    venus.shape('circle')
-    earth.shape('circle')
-    mars.shape('circle')
-    mercury.pu()
-    venus.pu()
-    earth.pu()
-    mars.pu()
-    mercury.sety(-58)
-    venus.sety(-108)
-    earth.sety(-150)
-    mars.sety(-228)
-    mercury.pd()
-    venus.pd()
-    earth.pd()
-    mars.pd()
-    mars.speed(7.5)
-    venus.speed(3)
-    earth.speed(2)
-    mars.speed(1)
-    t = [threading.Thread(target=f) for f in [
-         (lambda: mercury.circle(58)),
-         (lambda: venus.circle(108)),
-         (lambda: earth.circle(150)),
-         (lambda: mars.circle(228))]]
-    for i in t:
-        i.start()
+    mercury = Planet(y=-58, speed=7.5, orbit=58)
+    venus = Planet(y=-108, speed=3, orbit=108)
+    earth = Planet(y=-150, speed=2, orbit=150)
+    mars = Planet(y=-228, speed=1, orbit=228)
+    planets = (mercury, venus, earth, mars)
+    for planet in planets:
+        planet.thread = threading.Thread(target=planet.revolve)
+        planet.thread.start()
     # We have to do at least one more turtle (or tkinter)
     # operation after starting the threads, or the main
     # thread will try to exit immediately, which will
     # cause it to block on the background threads, which
     # will cause the background threads to queue up events
     # that never get run, and hello deadlock.
-    dummy = turtle.Turtle()
+    turtle.Screen().exitonclick()
 
 planets()
